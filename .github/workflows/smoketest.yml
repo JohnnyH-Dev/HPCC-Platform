@@ -305,6 +305,7 @@ jobs:
           build/CMakeCache.txt
           build/CMakeFiles/CMakeOutput.log
           build/CMakeFiles/CMakeError.log
+          build/Cmake_Error.log
 
     # Cache contains:
     # - make binaries (build-cache)
