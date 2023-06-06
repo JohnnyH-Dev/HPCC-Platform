@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Add a timestamp to the output filename to prevent overwriting
-output_file="CMake_Error_Log_$(date '+%Y%m%d%H%M%S').log"
+output_file="CMake_Error$(date '+%Y%m%d%H%M%S').log"
 
 # Clean the output file first
 echo "" > $output_file
 
 # specify the directory
-directory="$GITHUB_WORKSPACE/.github/workflows"
+directory="CMakeFiles"
 
 # loop over each file in directory
 for input_file in $directory/*.log; do
