@@ -294,6 +294,7 @@ jobs:
       run: |
         cp ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
         chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
+        find . -iname '*.log' -type f
         install/opt/HPCCSystems/bin/johnnytest4.sh
 
     - name: build-logs-artifact
