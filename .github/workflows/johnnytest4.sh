@@ -6,11 +6,8 @@ output_file="CMake_Error$(date '+%Y%m%d%H%M%S').log"
 # Clean the output file first
 echo "" > $output_file
 
-# specify the directory
-directory="CMakeFiles"
-
-# loop over each file in directory
-for input_file in $directory/*.log; do
+# Using find to locate all .log files in the current directory and its subdirectories
+find . -iname '*.log' -type f | while read -r input_file; do
 
   echo "File: $input_file" >> $output_file
   echo "" >> $output_file
