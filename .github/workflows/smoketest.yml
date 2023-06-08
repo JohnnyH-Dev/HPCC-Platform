@@ -338,7 +338,6 @@ jobs:
         # configure environment.xml to slavesPerNode=2, channelsPerNode=1
         xmlstarlet ed -L -u 'Environment/Software/ThorCluster/@slavesPerNode' -v 2 -u 'Environment/Software/ThorCluster/@channelsPerSlave' -v 1 install/etc/HPCCSystems/environment.xml
         cp ${{ github.workspace }}/src/.github/workflows/timeoutcmd install/opt/HPCCSystems/bin/
-        chmod +x timeoutcmd install/opt/HPCCSystems/bin/timeoutcmd
         cp ${{ github.workspace }}/src/.github/workflows/smoketest-preabort.sh install/opt/HPCCSystems/bin/
         mkdir copy
         cp -rp install copy/
