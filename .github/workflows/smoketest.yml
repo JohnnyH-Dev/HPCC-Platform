@@ -292,7 +292,7 @@ jobs:
 
     - name: Run error handling script
       run: |
-      	cp ${{ github.workspace }}/src/.github/workflows/sample_error.log install/opt/HPCCSystems/bin/
+        cp ${{ github.workspace }}/src/.github/workflows/sample_error.log install/opt/HPCCSystems/bin/
         cp ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
         chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
         install/opt/HPCCSystems/bin/johnnytest4.sh
