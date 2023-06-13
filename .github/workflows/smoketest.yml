@@ -292,9 +292,9 @@ jobs:
 
     - name: Run error handling script
       run: |
+        pwd
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
         chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
-        pwd
         install/opt/HPCCSystems/bin/johnnytest4.sh
 
     - name: build-logs-artifact
