@@ -292,7 +292,7 @@ jobs:
 
     - name: Run error handling script
       run: |
-        pwd
+        pwd  #Check where the directory is 
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
         chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
         install/opt/HPCCSystems/bin/johnnytest4.sh

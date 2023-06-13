@@ -20,7 +20,7 @@ find . -iname '*.log' -type f | while read -r input_file; do
   error_message=$(awk '/CMake Error/{flag=1}/^$/{flag=0}flag' $input_file)
   
   if [[ -z "$error_message" ]]; then
-    echo "No CMake errors detected." >> $output_file
+    echo "No CMake errors detected. This is a test message (Will delete after actions completes)" >> $output_file
     continue
   else
     echo "$error_message" >> $output_file
