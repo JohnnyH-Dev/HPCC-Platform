@@ -300,7 +300,7 @@ jobs:
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh build/
         chmod +x build/johnnytest4.sh
         pwd
-        build/johnnytest.sh
+        build/johnnytest4.sh
 
     - name: build-logs-artifact
       if: ${{ failure() }}
