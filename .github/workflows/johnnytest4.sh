@@ -19,6 +19,7 @@ find . -iname '*err.log' -type f | while read -r input_file; do
   
   if [[ -z "$error_message" ]]; then
     echo "No CMake errors detected."  >> $output_file
+    continue
   else
     echo "$error_message" >> $output_file
   fi
