@@ -7,21 +7,18 @@ output_file="CMake_Error$(date '+%Y%m%d%H%M%S').log"
 echo "" > $output_file
 
 # Using find to locate all .log files in the current directory and its subdirectories
-find . -iname '*.log' -type f | while read -r input_file; do
+find . -iname '*err.log' -type f | while read -r input_file; do
 
   echo "File: $input_file" >> $output_file
   echo "" >> $output_file
   echo "Error Message:" >> $output_file
   echo "" >> $output_file
 
-  awk '/CMake Error/{flag=1}/^$/{flag=0}flag' $input_file >> $output_file
-
   # Load error message into a variable
   error_message=$(awk '/CMake Error/{flag=1}/^$/{flag=0}flag' $input_file)
   
   if [[ -z "$error_message" ]]; then
     echo "No CMake errors detected."  >> $output_file
-    continue
   else
     echo "$error_message" >> $output_file
   fi

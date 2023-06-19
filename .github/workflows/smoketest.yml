@@ -292,10 +292,15 @@ jobs:
 
     - name: Run error handling script
       run: |
-        pwd  #Check where the directory is 
-        cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
-        chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
-        #Commented out for bug fixing install/opt/HPCCSystems/bin/johnnytest4.sh
+        #cp -v ${{ github.workspace }}/src/.github/workflows/sample_error.log install/opt/HPCCSystems/bin/
+        #cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
+        #chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
+        #install/opt/HPCCSystems/bin/johnnytest4.sh
+        cp -v ${{ github.workspace }}/src/.github/workflows/sample_err.log build/
+        cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh build/
+        chmod +x build/johnnytest4.sh
+        pwd
+        build/johnnytest.sh
 
     - name: build-logs-artifact
       if: ${{ failure() }}
