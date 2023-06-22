@@ -306,7 +306,7 @@ jobs:
           else
             #If error_status is non-zero then retry the build
             retry_count=$((retry_count+1))
-            echo "Retrying build... ($retry_count/$max_retries)
+            echo "Retrying build... ($retry_count/$max_retries)"
           fi
         done
 
