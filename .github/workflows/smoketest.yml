@@ -278,29 +278,39 @@ jobs:
     # except those changed between the cache SHA and the SHA being built.
     # NB: BUILD_TAG is overridden to a constant "smoketest", this is to prevent the auto-generated build tag being
     # used, which would cause it to change per PR (per SHA), and because it's in a common header, cause a lot of undesirable rebuilding.
-    - name: Build
+    - name: Build and handle errors
       timeout-minutes: 120 # Generous, typical build time from clean is < 60
       if: ${{ steps.check-cache.outputs.state != '' }} # if 'state' set to anything, then step needed
       run: |
-        cd build
-        echo "removing CMakeCache.txt"
-        rm -f CMakeCache.txt
-        if [[ ! -f cache-timestamp ]]; then touch cache-timestamp; fi
-        touch ../cmake-timestamp
-        `../src/vcpkg/vcpkg fetch cmake | tail -n 1` ../src -Wno-dev -DRUNTIME_USER=$(whoami) -DRUNTIME_GROUP=$(id -gn) -DDESTDIR=$(realpath ..)/install -DINCLUDE_PLUGINS=1 -DCMAKE_BUILD_TYPE=Release -DUSE_PYTHON2=0 -DUSE_PYTHON3=1 -DSUPPRESS_SPARK=1 -DUSE_CPPUNIT=1 -DUSE_CASSANDRA=Off -DCMAKE_CXX_FLAGS="-DBUILD_TAG=\\\"dummytag\\\" -DBUILD_VERSION_MAJOR=1 -DBUILD_VERSION_MINOR=1 -DBUILD_VERSION_POINT=0" -DBUILD_TAG="smoketest" -DSTRIP_RELEASE_SYMBOLS=0 -DCMAKE_CXX_FLAGS="-DTRACE_GLOBAL_GROUP=1"
-        make -j$(nproc) install
-
-    - name: Run error handling script
-      run: |
-        #cp -v ${{ github.workspace }}/src/.github/workflows/sample_error.log install/opt/HPCCSystems/bin/
-        #cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh install/opt/HPCCSystems/bin/
-        #chmod +x install/opt/HPCCSystems/bin/johnnytest4.sh
-        #install/opt/HPCCSystems/bin/johnnytest4.sh
+        retry_count=0
+        max_retries=3
+        #Copy and run error handling script
         cp -v ${{ github.workspace }}/src/.github/workflows/sample_err.log build/
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh build/
-        chmod +x build/johnnytest4.sh
-        pwd
-        build/johnnytest4.sh
+        while ((retry_count<max_retries)); do
+          # Start the build process
+          cd build
+          echo "removing CMakeCache.txt"
+          rm -f CMakeCache.txt
+          if [[ ! -f cache-timestamp ]]; then touch cache-timestamp; fi
+          touch ../cmake-timestamp
+          `../src/vcpkg/vcpkg fetch cmake | tail -n 1` ../src -Wno-dev -DRUNTIME_USER=$(whoami) -DRUNTIME_GROUP=$(id -gn) -DDESTDIR=$(realpath ..)/install -DINCLUDE_PLUGINS=1 -DCMAKE_BUILD_TYPE=Release -DUSE_PYTHON2=0 -DUSE_PYTHON3=1 -DSUPPRESS_SPARK=1 -DUSE_CPPUNIT=1 -DUSE_CASSANDRA=Off -DCMAKE_CXX_FLAGS="-DBUILD_TAG=\\\"dummytag\\\" -DBUILD_VERSION_MAJOR=1 -DBUILD_VERSION_MINOR=1 -DBUILD_VERSION_POINT=0" -DBUILD_TAG="smoketest" -DSTRIP_RELEASE_SYMBOLS=0 -DCMAKE_CXX_FLAGS="-DTRACE_GLOBAL_GROUP=1"
+          make -j$(nproc) install
+          chmod +x build/johnnytest4.sh
+          build/johnnytest4.sh
+          error_status=$?
+        
+          #Check to see if error_status has any retryable errors
+          if ((error_status == 0)); then
+            break
+          else
+            #If error_status is non-zero then retry the build
+            retry_count=$((retry_count+1))
+            echo "Retrying build... ($retry_count/$max_retries)
+          fi
+        done
+
+
 
     - name: build-logs-artifact
       if: ${{ failure() }}

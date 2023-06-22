@@ -6,6 +6,9 @@ output_file="CMake_Error$(date '+%Y%m%d%H%M%S').log"
 # Clean the output file first
 echo "" > $output_file
 
+#Count to see if a retryable error exists
+retryable_error=0
+
 # Using find to locate all .log files in the current directory and its subdirectories
 find . -iname '*err.log' -type f | while read -r input_file; do
 
@@ -32,10 +35,13 @@ find . -iname '*err.log' -type f | while read -r input_file; do
 if [[ $error_message == *"add_subdirectory"* ]]; then
   echo "  - Wrong source branch selected in HPCC-Platform local repo" >> $output_file
   echo "  - GitHub plays funny (rarely it happens, it checks out a version/tag, but not fully and reported ok)" >> $output_file
+  retryable_error=1
 elif [[ $error_message == *"VERSION"* && $error_message == *"format invalid"* ]]; then
   echo "  - Invalid version format" >> $output_file
+  retryable_error=0
 elif [[ $error_message == *"Failed to download"* ]]; then
-  echo "  - Lack of GH resource" >> $output_file 
+  echo "  - Lack of GH resource" >> $output_file
+  retryable_error=1 
 fi
 
 echo "" >> $output_file
@@ -62,6 +68,13 @@ elif [[ $error_message == *"Failed to download"* ]]; then
   echo "    command output" >> $output_file
   echo "  - It is worth to try rerun cmake a couple of times with some delay between" >> $output_file
   echo "- If the error persists should arhive: Captured apt-get otput" >> $output_file
+fi
+
+#Return exit code whether a retryable error has occured
+if ((retryable_error)); then
+  exit 1
+else
+  exit 0
 fi
 
 done
