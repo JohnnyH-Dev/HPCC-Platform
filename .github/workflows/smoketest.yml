@@ -291,6 +291,10 @@ jobs:
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh .
         chmod +x johnnytest4.sh
 
+        echo $USER
+        id -gr
+        env
+
         #Retry Loop
         while ((retry_count<max_retries)); do
           # Start the build process
