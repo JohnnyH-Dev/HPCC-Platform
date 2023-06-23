@@ -284,9 +284,14 @@ jobs:
       run: |
         retry_count=0
         max_retries=3
+        #Move to build directory
+        cd build
         #Copy and run error handling script
-        cp -v ${{ github.workspace }}/src/.github/workflows/sample_err.log build/
-        cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh build/
+        cp -v ${{ github.workspace }}/src/.github/workflows/sample_err.log .
+        cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh .
+        chmod +x johnnytest4.sh
+
+        #Retry Loop
         while ((retry_count<max_retries)); do
           # Start the build process
           cd build
@@ -294,23 +299,26 @@ jobs:
           rm -f CMakeCache.txt
           if [[ ! -f cache-timestamp ]]; then touch cache-timestamp; fi
           touch ../cmake-timestamp
+
+          #Run CMake command
           `../src/vcpkg/vcpkg fetch cmake | tail -n 1` ../src -Wno-dev -DRUNTIME_USER=$(whoami) -DRUNTIME_GROUP=$(id -gn) -DDESTDIR=$(realpath ..)/install -DINCLUDE_PLUGINS=1 -DCMAKE_BUILD_TYPE=Release -DUSE_PYTHON2=0 -DUSE_PYTHON3=1 -DSUPPRESS_SPARK=1 -DUSE_CPPUNIT=1 -DUSE_CASSANDRA=Off -DCMAKE_CXX_FLAGS="-DBUILD_TAG=\\\"dummytag\\\" -DBUILD_VERSION_MAJOR=1 -DBUILD_VERSION_MINOR=1 -DBUILD_VERSION_POINT=0" -DBUILD_TAG="smoketest" -DSTRIP_RELEASE_SYMBOLS=0 -DCMAKE_CXX_FLAGS="-DTRACE_GLOBAL_GROUP=1"
+
+          #Make install
           make -j$(nproc) install
-          chmod +x build/johnnytest4.sh
-          build/johnnytest4.sh
+
+          #Run error handling script
+          ./johnnytest4.sh
           error_status=$?
-        
+
           #Check to see if error_status has any retryable errors
           if ((error_status == 0)); then
-            break
+            break #No errrors or non-retryable errors
           else
             #If error_status is non-zero then retry the build
             retry_count=$((retry_count+1))
             echo "Retrying build... ($retry_count/$max_retries)"
           fi
         done
-
-
 
     - name: build-logs-artifact
       if: ${{ failure() }}
