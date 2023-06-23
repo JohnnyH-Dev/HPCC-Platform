@@ -286,7 +286,7 @@ jobs:
         max_retries=3
         #Move to build directory
         cd build
-        #Copy and run error handling script
+        #Copy error handling script into build directory
         cp -v ${{ github.workspace }}/src/.github/workflows/sample_err.log .
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh .
         chmod +x johnnytest4.sh
@@ -294,7 +294,6 @@ jobs:
         #Retry Loop
         while ((retry_count<max_retries)); do
           # Start the build process
-          cd build
           echo "removing CMakeCache.txt"
           rm -f CMakeCache.txt
           if [[ ! -f cache-timestamp ]]; then touch cache-timestamp; fi
