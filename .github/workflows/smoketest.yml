@@ -333,6 +333,7 @@ jobs:
           build/CMakeFiles/CMakeOutput.log
           build/CMakeFiles/CMakeError.log
           build/Cmake_Error.log
+          install/opt/HPCCSystems/testing/regress/trace_files.zip
 
     # Cache contains:
     # - make binaries (build-cache)
@@ -385,8 +386,11 @@ jobs:
         timeoutcmd $((8 * 60)) \
           ./ecl-test setup --preAbort 'smoketest-preabort.sh' --pq 2 --generateStackTrace
         grep Failure: ${{ github.workspace }}/regress/log/setup_*.log
-        if [[ "$(grep -ohP '(?<=^Failure: )[0-9]+$' ${{ github.workspace }}/regress/log/setup_*.log | awk '{s+=$1} END {print s}')" -gt 0 ]]; then exit 1; fi
         ${{ github.workspace }}/install/opt/HPCCSystems/etc/init.d/hpcc-init stop
+        cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        chmod +x CoreScript.sh
+        ./CoreScript.sh
+        if [[ "$(grep -ohP '(?<=^Failure: )[0-9]+$' ${{ github.workspace }}/regress/log/setup_*.log | awk '{s+=$1} END {print s}')" -gt 0 ]]; then exit 1; fi
 
     - name: regression-setup-logs-artifact
       if: ${{ failure() || cancelled() }}
