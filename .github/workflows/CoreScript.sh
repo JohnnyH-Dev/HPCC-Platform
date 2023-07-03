@@ -7,17 +7,14 @@ corefiles=$(find ./ -name "core_*")
 
 for corefile in $corefiles; do
   
-  echo $corefiles
   # extract binary name
   binaryname=${corefile#*_}
-  echo $binaryname
+
   binaryname=${binaryname%%.*}
-  echo $binaryname
   
   # find the binary
   binary=$binaryname
-  echo $binary
-  
+
   if [[ -z $binary ]]; then
     echo "Binary $binaryname not found!"
     continue
@@ -35,9 +32,16 @@ for corefile in $corefiles; do
       "$binary" "$corefile" > "$binaryname.trace" 2>&1
 done
 
-#Create a zip to store trace files only if they exist
+# check if any trace files are generated
 if ls *.trace 1> /dev/null 2>&1; then
-  zip -r trace_files.zip *.trace
-  rm *.trace
+    # if yes, zip them
+    zip -r trace_files.zip *.trace
+else
+    # if no, create a txt file stating no trace files detected
+    echo "No trace files detected" > trace_files.txt
+    zip trace_files.zip trace_files.txt
 fi
+
+# remove trace files or the txt file
+rm *.trace trace_files.txt 2> /dev/null
 
