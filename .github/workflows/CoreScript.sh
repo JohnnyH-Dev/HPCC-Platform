@@ -35,7 +35,9 @@ for corefile in $corefiles; do
       "$binary" "$corefile" > "$binaryname.trace" 2>&1
 done
 
-#Create a zip to store trace files
-zip -r trace_files.zip *.trace
+#Create a zip to store trace files only if they exist
+if ls *.trace 1> /dev/null 2>&1; then
+  zip -r trace_files.zip *.trace
+  rm *.trace
+fi
 
-rm *.trace
