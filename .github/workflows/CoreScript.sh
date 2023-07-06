@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -x
+set -x
 
 # search for core files in the current directory
 corefiles=$(find ./ -name "core_*")
