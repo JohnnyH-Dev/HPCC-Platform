@@ -43,5 +43,6 @@ else
 fi
 
 # remove trace files or the txt file
-rm *.trace trace_files.txt 2> /dev/null
+[[ -e *.trace ]] && rm *.trace
+[[ -e trace_files.txt ]] && rm trace_files.txt
 
