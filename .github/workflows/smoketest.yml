@@ -544,10 +544,12 @@ jobs:
       run: |
         export LANG="en_US.UTF-8"
         sudo update-locale
-        tar --zstd -xf install.tgz 
-        
-	#Get list of all unit tests and sort them alphabetically
+        tar --zstd -xf install.tgz
+       # Get list of all unit tests and sort them alphabetically
         tests=$(install/opt/HPCCSystems/bin/unittests -l | sort)
+        
+        for test_case in $tests; do
+        
         
         for test_case in $tests; do
           echo "Running $test_case"
