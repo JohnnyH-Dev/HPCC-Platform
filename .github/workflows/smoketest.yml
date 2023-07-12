@@ -565,8 +565,12 @@ jobs:
           fi
         done
         # Process the logs to generate a summary
-        ok_tests=$(grep -l 'OK' *.log)
-        failed_tests=$(grep -l 'FAILED' *.log)
+        if ls *.log 1> /dev/null 2>&1; then
+          ok_tests=$(grep -l 'OK' *.log) || true
+          failed_tests=$(grep -l 'FAILED' *.log) || true
+        else
+          echo "No log files found"
+        fi
         echo "Number of tests executed $(wc -l <<< "$tests")"
         echo "Number of OK tests $(wc -l <<< "$ok_tests")"
         echo "Number of failed tests $(wc -l <<< "$failed_tests")"
