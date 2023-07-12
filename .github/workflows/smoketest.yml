@@ -542,6 +542,7 @@ jobs:
     - name: run
       timeout-minutes: 10 # generous, expected time is approx 1 min. 
       run: |
+        set -x      
         export LANG="en_US.UTF-8"
         sudo update-locale
         tar --zstd -xf install.tgz
