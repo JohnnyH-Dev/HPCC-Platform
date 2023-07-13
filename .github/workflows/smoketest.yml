@@ -565,15 +565,22 @@ jobs:
           fi
         done
         # Process the logs to generate a summary
-        if ls *.log 1> /dev/null 2>&1; then
-          ok_tests=$(grep -l 'OK' *.log) || true
-          failed_tests=$(grep -l 'FAILED' *.log) || true
-        else
-          echo "No log files found"
-        fi
-        echo "Number of tests executed $(wc -l <<< "$tests")"
-        echo "Number of OK tests $(wc -l <<< "$ok_tests")"
-        echo "Number of failed tests $(wc -l <<< "$failed_tests")"
+        ok_tests=$(grep -l 'OK' *.log || true)
+        ok_test_count=$(echo "$ok_tests" | wc -l)
+        failed_test_count=$(( test_count - ok_test_count ))
+        echo "Number of tests executed $test_count"
+        echo "Number of OK tests $ok_test_count"
+        echo "Number of failed tests $failed_test_count"
+        # if ls *.log 1> /dev/null 2>&1; then
+          #ok_tests=$(grep -l 'OK' *.log) || true
+          #failed_tests=$(grep -l 'FAILED' *.log) || true
+        #else
+          #echo "No log files found"
+        #fi
+        #echo "Number of tests executed $(wc -l <<< "$tests")"
+        #echo "Number of OK tests $(wc -l <<< "$ok_tests")"
+        #echo "Number of failed tests $(wc -l <<< "$failed_tests")"
+        
         # Create a zip file with all logs and upload it as an artifact
         zip logs.zip *.log
         rm *.log
