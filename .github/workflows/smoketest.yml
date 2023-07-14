@@ -584,15 +584,24 @@ jobs:
         # Create a zip file with all logs and upload it as an artifact
         zip logs.zip *.log
         rm *.log
+        
+        # Run CoreScript to check for core files
+        cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        chmod +x CoreScript.sh
+        ./CoreScript.sh
  
     - uses: actions/upload-artifact@v2
       with:
         name: test-logs
         path: logs.zip
-        
-        
-        
-
+     
+    - name: Upload core dump unittesting
+      uses: actions/upload-artifact@v2
+      if: always() #Ensures that it is always executed in case of unit test failure
+      with:
+        name: trace-files
+        path : trace_files.zip
+    
   # NB: this doesn't really need the post-setup data files included in install.tgz
   # but as this is relatively quick and in parallel with others, it probably doesn't matter
   eclwatch-ui-tests:
