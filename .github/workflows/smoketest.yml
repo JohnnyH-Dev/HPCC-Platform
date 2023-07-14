@@ -385,7 +385,8 @@ jobs:
         cd install/opt/HPCCSystems/testing/regress
         # force regression suite to timeout after 8 minutes, so it captures ZAP report of any inflight hung queries
         timeoutcmd $((8 * 60)) \
-          ./ecl-test setup --preAbort 'smoketest-preabort.sh' --pq 2 --generateStackTrace
+        # Change --pq 2 to --pq 3 to see if system can handle an increase in workload
+          ./ecl-test setup --preAbort 'smoketest-preabort.sh' --pq 3 --generateStackTrace
         grep Failure: ${{ github.workspace }}/regress/log/setup_*.log
         ${{ github.workspace }}/install/opt/HPCCSystems/etc/init.d/hpcc-init stop
         cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
