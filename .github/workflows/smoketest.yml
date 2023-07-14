@@ -501,7 +501,11 @@ jobs:
 
         # force regression suite to timeout after 28 minutes, so it captures ZAP report of any inflight hung queries
         timeoutcmd $((28 * 60)) \
-          ./ecl-test query --preAbort 'smoketest-preabort.sh' --pq 2 --target ${{ matrix.engine }} --excludeclass python2,embedded-r,embedded-js,3rdpartyservice,mongodb --generateStackTrace ${queries}
+        for query in ${queries}
+        do
+          ./ecl-test query --preAbort 'smoketest-preabort.sh' --pq 2 --target ${{ matrix.engine }} --excludeclass python2,embedded-r,embedded-js,3rdpartyservice,mongodb --generateStackTrace ${query}
+        done
+          #Commented our original command line ./ecl-test query --preAbort 'smoketest-preabort.sh' --pq 2 --target ${{ matrix.engine }} --excludeclass python2,embedded-r,embedded-js,3rdpartyservice,mongodb --generateStackTrace ${queries}
         grep Failure: ${{ github.workspace }}/regress/log/${{ matrix.engine }}.*.log
         if [[ "$(grep -oP '(?<=^Failure: )[0-9]+$' ${{ github.workspace }}/regress/log/${{ matrix.engine }}.*.log)" -gt 0 ]]; then exit 1; fi
 
@@ -585,8 +589,9 @@ jobs:
         zip logs.zip *.log
         rm *.log
         
-        # Run CoreScript to check for core files
-        cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        # Navigate to original directory and run CoreScript to check for core files
+        cd "${{ github.workspace }}"
+        cp -v "${{ github.workspace }}/src/.github/workflows/CoreScript.sh" .
         chmod +x CoreScript.sh
         ./CoreScript.sh
  
