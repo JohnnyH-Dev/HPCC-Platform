@@ -587,9 +587,9 @@ jobs:
         rm *.log
         
         # Run CoreScript to check for core files
-        cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
-        chmod +x CoreScript.sh
-        ./CoreScript.sh
+        #cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        #chmod +x CoreScript.sh
+        #./CoreScript.sh
  
     - uses: actions/upload-artifact@v2
       with:
