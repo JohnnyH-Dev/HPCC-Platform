@@ -589,10 +589,7 @@ jobs:
         zip logs.zip *.log
         rm *.log
         
-        # Navigate to original directory and run CoreScript to check for core files
-        cd "${{ github.workspace }}"
-        cp -v "${{ github.workspace }}/src/.github/workflows/CoreScript.sh" .
-        chmod +x CoreScript.sh
+        #Run CoreScript to check for core files
         ./CoreScript.sh
  
     - uses: actions/upload-artifact@v2
