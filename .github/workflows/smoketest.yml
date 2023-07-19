@@ -255,7 +255,7 @@ jobs:
       if: ${{ steps.check-cache.outputs.state != '' }} # if 'state' set then step needed
       run: |
         mono `vcpkg fetch nuget | tail -n 1` \
-          sources add 
+          sources add \
           -source "https://nuget.pkg.github.com/hpcc-systems/index.json" \
           -storepasswordincleartext \
           -name "GitHub" \
