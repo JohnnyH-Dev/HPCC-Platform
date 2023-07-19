@@ -445,7 +445,7 @@ jobs:
         - pattern: '[m-q]*.ecl'
         - pattern: '[r-u]*.ecl'
           exclude: teststdlibrary.ecl
-        - pattern: '[v-z]*.ecl'
+        - pattern: '[v-z]*.ecl'th
         include:
         - engine: 'hthor'
           match:
@@ -586,6 +586,8 @@ jobs:
         #echo "Number of failed tests $(wc -l <<< "$failed_tests")"
         
         #Run CoreScript to check for core files
+        cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        chmod +x CoreScript.sh
         ./CoreScript.sh
         
         # Create a zip file with all logs and upload it as an artifact
