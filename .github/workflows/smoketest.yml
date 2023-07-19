@@ -255,7 +255,7 @@ jobs:
       if: ${{ steps.check-cache.outputs.state != '' }} # if 'state' set then step needed
       run: |
         mono `vcpkg fetch nuget | tail -n 1` \
-          sources add \
+          sources add 
           -source "https://nuget.pkg.github.com/hpcc-systems/index.json" \
           -storepasswordincleartext \
           -name "GitHub" \
@@ -585,12 +585,12 @@ jobs:
         #echo "Number of OK tests $(wc -l <<< "$ok_tests")"
         #echo "Number of failed tests $(wc -l <<< "$failed_tests")"
         
+        #Run CoreScript to check for core files
+        ./CoreScript.sh
+        
         # Create a zip file with all logs and upload it as an artifact
         zip logs.zip *.log
         rm *.log
-        
-        #Run CoreScript to check for core files
-        ./CoreScript.sh
  
     - uses: actions/upload-artifact@v2
       with:
