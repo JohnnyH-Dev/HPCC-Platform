@@ -583,10 +583,11 @@ jobs:
         #fi
         #echo "Number of tests executed $(wc -l <<< "$tests")"
         #echo "Number of OK tests $(wc -l <<< "$ok_tests")"
-        #echo "Number of failed tests $(wc -l <<< "$failed_tests")"
+        #echo "Number of failed testws $(wc -l <<< "$failed_tests")"
         
         # Check core files using CoreScript
-        cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        #cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
+        cp -v /home/runner/work/HPCC-Platform/src/.github/workflows/CoreScript.sh .
         chmod +x CoreScript.sh
         ./CoreScript.sh
         
