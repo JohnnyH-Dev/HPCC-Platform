@@ -587,7 +587,7 @@ jobs:
         
         # Check core files using CoreScript
         #cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
-        cp -v /home/runner/work/HPCC-Platform/src/.github/workflows/CoreScript.sh .
+        cp -v ${{ GITHUB_WORKSPACE }}/src/.github/workflows/CoreScript.sh .
         chmod +x CoreScript.sh
         ./CoreScript.sh
         
