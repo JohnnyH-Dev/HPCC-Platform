@@ -478,6 +478,11 @@ jobs:
         sudo apt-get install -y nodejs
 
         echo "node.js version = $(node --version), npm version = $(npm --version), release = $(lsb_release -sc)"
+        
+    - name: Enable core dumps
+      run: |
+        ulimit -c unlimited
+        echo 'core_%e.%p' | sudo tee /proc/sys/kernel/core_pattern
 
     - name: run
       timeout-minutes: 30 # generous, each matrix step shouldn't take more than 10 mins

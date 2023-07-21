@@ -51,7 +51,3 @@ else
     zip $zip_file_name "${engine}_${pattern}_trace_files.txt"
 fi
 
-# remove trace files or the txt file
-[[ -e *${engine}_${pattern}*.trace ]] && rm *${engine}_${pattern}*.trace
-[[ -e "${engine}_${pattern}_trace_files.txt" ]] && rm "${engine}_${pattern}_trace_files.txt"
-
