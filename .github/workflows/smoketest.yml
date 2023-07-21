@@ -66,8 +66,8 @@ jobs:
 
   build-and-setup:
     name: Build platform and regress setup
-    needs: check-skip
-    if: ${{ needs.check-skip.outputs.platform || needs.check-skip.outputs.eclwatch }}
+    #needs: check-skip
+    #if: ${{ needs.check-skip.outputs.platform || needs.check-skip.outputs.eclwatch }}
     runs-on: ubuntu-22.04
     timeout-minutes: 150 # the build step has its own timeout, however the job can sometimes take time to download dependencies
     outputs:
