@@ -51,7 +51,7 @@ on:
 # does not have permission to cancel actions.
 jobs:
   check-skip:
-    # continue-on-error: true # Uncomment once integration is finishedf
+    # continue-on-error: true # Uncomment once integration is finished
     runs-on: ubuntu-22.04
     # Map a step output to a job output
     outputs:
@@ -66,8 +66,8 @@ jobs:
 
   build-and-setup:
     name: Build platform and regress setup
-    # needs: check-skip
-    # if: ${{ needs.check-skip.outputs.platform || needs.check-skip.outputs.eclwatch }}
+    needs: check-skip
+    if: ${{ needs.check-skip.outputs.platform || needs.check-skip.outputs.eclwatch }}
     runs-on: ubuntu-22.04
     timeout-minutes: 150 # the build step has its own timeout, however the job can sometimes take time to download dependencies
     outputs:
@@ -504,6 +504,12 @@ jobs:
         timeoutcmd $((28 * 60)) \
           ./ecl-test query --preAbort 'smoketest-preabort.sh' --pq 2 --target ${{ matrix.engine }} --excludeclass python2,embedded-r,embedded-js,3rdpartyservice,mongodb --generateStackTrace ${queries}
         grep Failure: ${{ github.workspace }}/regress/log/${{ matrix.engine }}.*.log
+        
+        #Copy and run MatrixCoreScript
+        cp -v ${{ github.workspace }}/src/.github/workflows/MatrixCoreScript.sh .
+        chmod +x MatrixCoreScript.sh
+        ENGINE=${{ matrix.engine }} PATTERN=${{ matrix.match.pattern }} ./MatrixCoreScript.sh
+        
         if [[ "$(grep -oP '(?<=^Failure: )[0-9]+$' ${{ github.workspace }}/regress/log/${{ matrix.engine }}.*.log)" -gt 0 ]]; then exit 1; fi
 
     - name: regression-run-logs-artifact
