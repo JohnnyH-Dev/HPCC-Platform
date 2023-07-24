@@ -287,7 +287,6 @@ jobs:
         #Move to build directory
         cd build
         #Copy error handling script into build directory
-        cp -v ${{ github.workspace }}/src/.github/workflows/sample_err.log .
         cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh .
         chmod +x johnnytest4.sh
 

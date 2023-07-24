@@ -73,8 +73,8 @@ fi
 #Return exit code whether a retryable error has occured
 if ((retryable_error)); then
   exit 1
-else
-  exit 0
 fi
 
 done
+
+exit 0
