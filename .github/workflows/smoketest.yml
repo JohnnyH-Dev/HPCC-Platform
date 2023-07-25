@@ -359,6 +359,7 @@ jobs:
           ./ecl-test setup --preAbort 'smoketest-preabort.sh' --pq 2 --generateStackTrace
         grep Failure: ${{ github.workspace }}/regress/log/setup_*.log
         ${{ github.workspace }}/install/opt/HPCCSystems/etc/init.d/hpcc-init stop
+        # Copy and run CoreScript to check for core files and generate trace files
         cp -v ${{ github.workspace }}/src/.github/workflows/CoreScript.sh .
         chmod +x CoreScript.sh
         ./CoreScript.sh
