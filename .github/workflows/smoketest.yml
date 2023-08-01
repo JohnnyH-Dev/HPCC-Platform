@@ -51,7 +51,7 @@ on:
 # does not have permission to cancel actions.
 jobs:
   check-skip:
-    # continue-on-error: true # Uncomment once integration is finished
+    continue-on-error: true # Uncomment once integration is finished, removed comment to check github actions
     runs-on: ubuntu-22.04
     # Map a step output to a job output
     outputs:
