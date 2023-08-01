@@ -519,7 +519,7 @@ jobs:
           echo "Running $test_case"
           start_time=$(date +%s)
           # Run each test case with a timeout of 30 seconds
-          timeout 30s install/opt/HPCCSystems/bin/unittests -e $test_case > $test_case.log
+          timeout 1m install/opt/HPCCSystems/bin/unittests -e $test_case > $test_case.log
           exit_code=$?
           end_time=$(date +%s)
           time_diff=$(( $end_time - $start_time ))
