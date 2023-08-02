@@ -394,7 +394,7 @@ jobs:
   # TODO: needs to process results, capture report, to be assembled by workflow when all jobs done
   regression-jobs:
     needs: build-and-setup
-    if: ${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' && needs.check-skip.outputs.platform }}
+    if: ${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' }} #Orginal line is the following:${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' && needs.check-skip.outputs.platform }}
     timeout-minutes: 60 # each matrix step has its own timeout, however the job can sometimes take time to download dependencies
     runs-on: ubuntu-22.04
     strategy:
