@@ -454,8 +454,8 @@ jobs:
         tar --zstd -xf install.tgz
         source install/opt/HPCCSystems/sbin/hpcc_setenv
         install/opt/HPCCSystems/etc/init.d/hpcc-init start
-        cd install/opt/HPCCSystems/testing/regress
         cp -v install/opt/HPCCSystems/bin/MatrixCoreScript.sh .
+        cd install/opt/HPCCSystems/testing/regress
         chmod +x MatrixCoreScript.sh
 
         (cd ecl; ls ${{ matrix.match.pattern }}) > matches.tmp
