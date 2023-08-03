@@ -57,6 +57,7 @@ jobs:
     outputs:
       platform: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest-force-rerun') || steps.skip_check.outputs.platform }}
       eclwatch: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest-force-rerun') || steps.skip_check.outputs.eclwatch }}
+      workflows: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest-force-rerun') || steps.skip_check.outputs.workflows }}
 
     steps:
       - id: skip_check
@@ -67,7 +68,7 @@ jobs:
   build-and-setup:
     name: Build platform and regress setup
     needs: check-skip
-    if: ${{ needs.check-skip.outputs.platform || needs.check-skip.outputs.eclwatch }}
+    if: ${{ needs.check-skip.outputs.platform || needs.check-skip.outputs.eclwatch || needs.check-skip.outputs.workflows }}
     runs-on: ubuntu-22.04
     timeout-minutes: 150 # the build step has its own timeout, however the job can sometimes take time to download dependencies
     outputs:
@@ -278,17 +279,49 @@ jobs:
     # except those changed between the cache SHA and the SHA being built.
     # NB: BUILD_TAG is overridden to a constant "smoketest", this is to prevent the auto-generated build tag being
     # used, which would cause it to change per PR (per SHA), and because it's in a common header, cause a lot of undesirable rebuilding.
-    - name: Build
+    - name: Build and handle errors
       timeout-minutes: 120 # Generous, typical build time from clean is < 60
       if: ${{ steps.check-cache.outputs.state != '' }} # if 'state' set to anything, then step needed
       run: |
+        retry_count=0
+        max_retries=3
+        #Move to build directory
         cd build
-        echo "removing CMakeCache.txt"
-        rm -f CMakeCache.txt
-        if [[ ! -f cache-timestamp ]]; then touch cache-timestamp; fi
-        touch ../cmake-timestamp
-        `../src/vcpkg/vcpkg fetch cmake | tail -n 1` ../src -Wno-dev -DRUNTIME_USER=$(whoami) -DRUNTIME_GROUP=$(id -gn) -DDESTDIR=$(realpath ..)/install -DINCLUDE_PLUGINS=1 -DCMAKE_BUILD_TYPE=Release -DUSE_PYTHON2=0 -DUSE_PYTHON3=1 -DSUPPRESS_SPARK=1 -DUSE_CPPUNIT=1 -DUSE_CASSANDRA=Off -DCMAKE_CXX_FLAGS="-DBUILD_TAG=\\\"dummytag\\\" -DBUILD_VERSION_MAJOR=1 -DBUILD_VERSION_MINOR=1 -DBUILD_VERSION_POINT=0" -DBUILD_TAG="smoketest" -DSTRIP_RELEASE_SYMBOLS=0 -DCMAKE_CXX_FLAGS="-DTRACE_GLOBAL_GROUP=1"
-        make -j$(nproc) install
+        #Copy error handling script into build directory
+        cp -v ${{ github.workspace }}/src/.github/workflows/johnnytest4.sh .
+        chmod +x johnnytest4.sh
+
+        echo $USER
+        id -gr
+        env
+
+        #Retry Loop
+        while ((retry_count<max_retries)); do
+          # Start the build process
+          echo "removing CMakeCache.txt"
+          rm -f CMakeCache.txt
+          if [[ ! -f cache-timestamp ]]; then touch cache-timestamp; fi
+          touch ../cmake-timestamp
+
+          #Run CMake command
+          `../src/vcpkg/vcpkg fetch cmake | tail -n 1` ../src -Wno-dev -DRUNTIME_USER=$(whoami) -DRUNTIME_GROUP=$(id -gn) -DDESTDIR=$(realpath ..)/install -DINCLUDE_PLUGINS=1 -DCMAKE_BUILD_TYPE=Release -DUSE_PYTHON2=0 -DUSE_PYTHON3=1 -DSUPPRESS_SPARK=1 -DUSE_CPPUNIT=1 -DUSE_CASSANDRA=Off -DCMAKE_CXX_FLAGS="-DBUILD_TAG=\\\"dummytag\\\" -DBUILD_VERSION_MAJOR=1 -DBUILD_VERSION_MINOR=1 -DBUILD_VERSION_POINT=0" -DBUILD_TAG="smoketest" -DSTRIP_RELEASE_SYMBOLS=0 -DCMAKE_CXX_FLAGS="-DTRACE_GLOBAL_GROUP=1"
+
+          #Make install
+          make -j$(nproc) install
+
+          #Run error handling script
+          ./johnnytest4.sh
+          error_status=$?
+
+          #Check to see if error_status has any retryable errors
+          if ((error_status == 0)); then
+            break #No errrors or non-retryable errors
+          else
+            #If error_status is non-zero then retry the build
+            retry_count=$((retry_count+1))
+            echo "Retrying build... ($retry_count/$max_retries)"
+          fi
+        done
 
     - name: build-logs-artifact
       if: ${{ failure() }}
@@ -299,6 +332,7 @@ jobs:
           build/CMakeCache.txt
           build/CMakeFiles/CMakeOutput.log
           build/CMakeFiles/CMakeError.log
+          build/Cmake_Error.log
 
     # Cache contains:
     # - make binaries (build-cache)
@@ -392,7 +426,7 @@ jobs:
   # TODO: needs to process results, capture report, to be assembled by workflow when all jobs done
   regression-jobs:
     needs: build-and-setup
-    if: ${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' && needs.check-skip.outputs.platform }}
+    if: ${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' && ( needs.check-skip.outputs.platform || needs.check-skip.outputs.workflows ) }}
     timeout-minutes: 60 # each matrix step has its own timeout, however the job can sometimes take time to download dependencies
     runs-on: ubuntu-22.04
     strategy:
@@ -512,7 +546,7 @@ jobs:
   # but as this is relatively quick and in parallel with others, it probably doesn't matter
   eclwatch-ui-tests:
     needs: build-and-setup
-    if: ${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' && needs.check-skip.outputs.eclwatch }}
+    if: ${{ needs.build-and-setup.outputs.cache-state != '' && github.event_name == 'pull_request' && ( needs.check-skip.outputs.eclwatch || needs.check-skip.outputs.workflows ) }}
     timeout-minutes: 30 # the ui-tests run step has its own timeout, however the job can sometimes take time to download dependencies
     runs-on: ubuntu-22.04
     steps:
