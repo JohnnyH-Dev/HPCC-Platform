@@ -454,7 +454,7 @@ jobs:
         tar --zstd -xf install.tgz
         source install/opt/HPCCSystems/sbin/hpcc_setenv
         install/opt/HPCCSystems/etc/init.d/hpcc-init start
-        cp -v install/opt/HPCCSystems/bin/MatrixCoreScript.sh .
+        cp -v install/opt/HPCCSystems/bin/MatrixCoreScript.sh install/opt/HPCCSystems/testing/regress
         cd install/opt/HPCCSystems/testing/regress
         chmod +x MatrixCoreScript.sh
 
