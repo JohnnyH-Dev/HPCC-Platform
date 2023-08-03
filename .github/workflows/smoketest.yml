@@ -76,7 +76,7 @@ jobs:
     steps:
     - name: Setup and git clone
       id: vars
-      run: |f
+      run: |
         if [[ "${{ github.event_name }}" = 'pull_request' ]]
         then
           echo ::set-output name=branch::${{ github.head_ref }}
